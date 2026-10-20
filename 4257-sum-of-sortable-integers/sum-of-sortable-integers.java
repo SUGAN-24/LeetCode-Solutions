@@ -1,48 +1,22 @@
 class Solution {
     public int sortableIntegers(int[] nums) {
         int n = nums.length;
-        int[] prefMax = new int[n + 1];
-        int[] suffMin = new int[n + 1];
-        int[] prefDrop = new int[n];
-        for (int i = 0; i < n; i++) {
-            prefMax[i + 1] = Math.max(prefMax[i], nums[i]);
-        }
-        suffMin[n] = Integer.MAX_VALUE;
-        for (int i = n - 1; i >= 0; i--) {
-            suffMin[i] = Math.min(nums[i], suffMin[i + 1]);
-        }
-        for (int i = 1; i < n; i++) {
-            prefDrop[i] = prefDrop[i - 1]
-                    + (nums[i - 1] > nums[i] ? 1 : 0);
-        }
-        int ans = 0;
-        for (int k = 1; k <= n / k; k++) {
-            if (n % k == 0) {
-                if (check(nums, prefMax, suffMin, prefDrop, k)) {
-                    ans += k;
-                }
-                int other = n / k;
-                if (other != k &&
-                    check(nums, prefMax, suffMin, prefDrop, other)) {
-                    ans += other;
-                }
-            }
-        }
-        return ans;
-    }
-    private boolean check(int[] nums, int[] prefMax,
-                          int[] suffMin, int[] prefDrop, int k) {
-        int n = nums.length;
-        for (int start = 0; start < n; start += k) {
-            int end = start + k - 1;
-            int drops = prefDrop[end] - prefDrop[start];
-            if (nums[end] > nums[start]) {
-                drops++;
-            }
-            if (drops > 1 || prefMax[start] > suffMin[start]) {
-                return false;
-            }
-        }
-        return true;
+
+        int[] desc = new int[n];  // desc[i]: number of descents nums[j] > nums[j + 1] with j < i
+        for (int i = 1; i < n; i++) desc[i] = desc[i - 1] + (nums[i - 1] > nums[i] ? 1 : 0);
+        int[] premax = nums.clone(), sufmin = nums.clone();
+        Arrays.parallelPrefix(premax, Math::max);  // premax[i]: max of nums[0..i]
+        for (int i = n - 2; i >= 0; i--) sufmin[i] = Math.min(sufmin[i], sufmin[i + 1]);  // sufmin[i]: min of nums[i..n-1]
+        boolean[] cut = new boolean[n];  // cut[m]: nums[0..m-1] holds exactly the m smallest values
+        cut[0] = true;
+        for (int m = 1; m < n; m++) cut[m] = premax[m - 1] <= sufmin[m];
+
+        BiPredicate<Integer, Integer> rotatable = (l, r) ->  // nums[l..r] is a rotated sorted run: at most one cyclic descent
+            desc[r] - desc[l] + (nums[r] > nums[l] ? 1 : 0) <= 1;
+        IntPredicate sortable = k ->  // every block starts at a valid cut and can be rotated into order
+            IntStream.iterate(0, l -> l < n, l -> l + k).allMatch(l -> cut[l] && rotatable.test(l, l + k - 1));
+
+        IntStream divisors = IntStream.rangeClosed(1, n).filter(k -> n % k == 0);
+        return divisors.filter(sortable).sum();
     }
 }
