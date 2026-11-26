@@ -44,6 +44,7 @@
 |  |
 | ------- |
 | [1352-product-of-the-last-k-numbers](https://github.com/SUGAN-24/LeetCode-Solutions/tree/master/1352-product-of-the-last-k-numbers) |
+| [3360-stone-removal-game](https://github.com/SUGAN-24/LeetCode-Solutions/tree/master/3360-stone-removal-game) |
 | [3411-maximum-subarray-with-equal-products](https://github.com/SUGAN-24/LeetCode-Solutions/tree/master/3411-maximum-subarray-with-equal-products) |
 ## Design
 |  |
@@ -85,4 +86,8 @@
 |  |
 | ------- |
 | [3934-smallest-unique-subarray](https://github.com/SUGAN-24/LeetCode-Solutions/tree/master/3934-smallest-unique-subarray) |
+## Simulation
+|  |
+| ------- |
+| [3360-stone-removal-game](https://github.com/SUGAN-24/LeetCode-Solutions/tree/master/3360-stone-removal-game) |
 <!---LeetCode Topics End-->
